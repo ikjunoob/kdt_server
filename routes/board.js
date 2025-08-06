@@ -1,11 +1,11 @@
 const express = require("express")
 const router = express.Router()
 
-let boards = require('../models/boardModel')
+let characters = require('../models/characterModel')
 
 router.get('/', (req, res) => {
     try {
-        res.status(200).json({ message: '전체 게시물 가져오기', boards })
+        res.status(200).json({ message: '전체 게시물 가져오기', characters })
     } catch (error) {
         res.status(500), json({ message: '서버오류' }, error)
     }
@@ -14,8 +14,8 @@ router.get('/', (req, res) => {
 // 1개 데이터 가져오기
 router.get('/:id', (req, res) => {
     try {
-        const boardId = Number(req.params.id)
-        const board = boards.find(item => item.id === boardId)
+        const characterId = Number(req.params.id)
+        const character = characters.find(item => item.id === characterId)
 
         if (!board) {
             return res.status(404).json({ message: '게시물을 찾을수 없음' })
@@ -23,7 +23,7 @@ router.get('/:id', (req, res) => {
         }
         return res.status(200).json({
             message: '1개 게시물 가져오기',
-            board
+            character
         })
     } catch (error) {
         res.status(500).json({ message: "서버오류", error })
@@ -39,13 +39,14 @@ router.post('/', (req, res) => {
             return res.status(400).json({ message: '제목과 내용을 모두 입력하세요' })
         }
 
-        const newBoard = {
+        const newChar = {
             id: Date.now(),
-            title,
-            content
+            name,
+            level,
+            isOnline: isOnline ?? false //빈값인 경우는 null일때   false
         }
-        boards.push(newBoard)
-        res.status(200).json({ message: '게시물 등록 성공', boards })
+        characters.push(newChar)
+        res.status(200).json({ message: '게시물 등록 성공', characters })
     } catch (error) {
         res.status(500).json({ message: "서버오류", error })
     }
@@ -54,8 +55,8 @@ router.post('/', (req, res) => {
 // 1개 데이터 가져오기
 router.put('/:id', (req, res) => {
     try {
-        const boardId = Number(req.params.id)
-        const index = boards.findIndex(item => item.id === boardId)
+        const characterId = Number(req.params.id)
+        const index = characters.findIndex(item => item.id === characterId)
 
         if (index === -1) {
             return res.status(404).json({ message: '게시물을 찾을수 없음' })
@@ -63,13 +64,13 @@ router.put('/:id', (req, res) => {
 
         const updateData = req.body
 
-        boards[index] = {
-            ...boards[index],
+        characters[index] = {
+            ...characters[index],
             ...updateData
         }
         res.status(200).json({
             message: '1개 게시물 수정하기',
-            board: boards[index]
+            character: characters[index]
         })
     } catch (error) {
         res.status(500).json({ message: "서버오류", error })
@@ -79,17 +80,17 @@ router.put('/:id', (req, res) => {
 // 1개 데이터 삭제하기
 router.delete('/:id', (req, res) => {
     try {
-        const boardId = Number(req.params.id)
-        const index = boards.findIndex(item => item.id === boardId)
+        const characterId = Number(req.params.id)
+        const index = characters.findIndex(item => item.id === characterId)
 
         if (index === -1) {
             return res.status(404).json({ message: '게시물을 찾을수 없음' })
         }
 
-        boards.splice(index, 1)
+        characters.splice(index, 1)
         res.status(200).json({
             message: '1개 게시물 삭제하기 완료',
-            boards
+            characters
         })
     } catch (error) {
         res.status(500).json({ message: "서버오류", error })
